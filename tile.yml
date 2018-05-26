@@ -1,0 +1,108 @@
+---
+# The high-level description of your tile.
+# Replace these properties with real values.
+#
+name: px-pks-tile # By convention lowercase with dashes
+icon_file: resources/px-logo.png
+label: Portworx Cloud Native Storage
+description: With Portworx, you can manage any database or stateful service on any infrastructure using PKS. You get a single data management layer for all of your stateful services, no matter where they run. Portworx even works across clouds.
+# metadata_version: 1.8                 # Optional, defaults to 1.8
+
+# Global defaults (all optional)
+#
+# org: test-org                         # Name of org to create for your apps
+# space: test-space                     # Name of space to create for your apps
+# apply_open_security_group: true       # Apply open security group, default: false
+
+# Specify the packages to be included in your tile.
+# The format of the section to include depends on the type
+# of package you are describing. For fragments of each type
+# that you can copy & paste, see:
+#
+# http://docs.pivotal.io/tiledev/tile-generator.html
+#
+packages:
+- name: px-deploy
+  type: docker-bosh
+  docker_images:
+  - fmrtl73/px-pks-deploy
+  cpu: 2
+  memory: 512
+  ephemeral_disk: 4096
+  persistent_disk: 2048
+  instances: 1
+  # routes:
+  #   - prefix: my-route
+  #     port: 8080
+  manifest: |
+    containers:
+    - name: app
+      image: "fmrtl73/px-pks-deploy" # should match the docker image name
+
+forms:
+- name: CloudCredentials
+  label: Cloud credentials configuraition
+  description: Configure cloud credentials for dynamic disk provisioning
+  properties:
+  - name: cloud-service-account
+    type: text
+    default:
+    label: service account (JSON)
+    description: Paste your cloud service account credentials here (JSON).
+- name: Plan-1
+  label: Plan 1
+  description: Configure how Portworx will be installed on PKS clusters based on Plan 1
+  properties:
+  - name: cluster-name-prefix-1
+    type: string
+    default: portworx-small
+    label: Cluster Name Prefix
+    description: This prefix will be used when generating a unique cluster name for each cluster
+  - name: internal-kvdb-1
+    type: boolean
+    default: true
+    label: Internal KVDB
+    description: Internal KVDB
+  - name: diskname-1
+    type: string
+    default:
+    label: Disk name or template
+    description: Specify comma-separated list of drives. (example:/dev/sdb,/dev/sdc or "type=gp2,size=100")
+- name: Plan-2
+  label: Plan 2
+  description: Configure how Portworx will be installed on PKS clusters based on Plan 2
+  properties:
+  - name: cluster-name-prefix-2
+    type: string
+    default: portworx-medium
+    label: Cluster Name Prefix
+    description: This prefix will be used when generating a unique cluster name for each cluster
+  - name: internal-kvdb-2
+    type: boolean
+    default: true
+    label: Internal KVDB
+    description: Internal KVDB
+  - name: diskname-2
+    type: string
+    default:
+    label: Disk name or template
+    description: Specify comma-separated list of drives. (example:/dev/sdb,/dev/sdc or template for cloud drives "type=gp2,size=100")
+- name: Plan-3
+  label: Plan 3
+  description: Configure how Portworx will be installed on PKS clusters based on Plan 3
+  properties:
+  - name: cluster-name-prefix-3
+    type: string
+    default: portworx-large
+    label: Cluster Name Prefix
+    description: This prefix will be used when generating a unique cluster name for each cluster
+  - name: internal-kvdb-3
+    type: boolean
+    default: true
+    label: Internal KVDB
+    description: Internal KVDB
+  - name: diskname-3
+    type: string
+    default:
+    label: Disk name or template
+    description: Specify comma-separated list of drives. (example:/dev/sdb,/dev/sdc or template for cloud drives "type=gp2,size=100")
