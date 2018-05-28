@@ -6,6 +6,7 @@ name: px_pks_tile # By convention lowercase with dashes
 icon_file: resources/px-logo.png
 label: Portworx Cloud Native Storage
 description: With Portworx, you can manage any database or stateful service on any infrastructure using PKS. You get a single data management layer for all of your stateful services, no matter where they run. Portworx even works across clouds.
+
 # metadata_version: 1.8                 # Optional, defaults to 1.8
 
 # Global defaults (all optional)
@@ -31,22 +32,40 @@ packages:
   ephemeral_disk: 4096
   persistent_disk: 2048
   instances: 1
-  # routes:
-  #   - prefix: my-route
-  #     port: 8080
+  routes:
+    - prefix: my-route
+      port: 8080
   manifest: |
     containers:
     - name: app
       image: "fmrtl73/px-pks-deploy" # should match the docker image name
-
+      bind_ports:
+      - '80:80'
+      - '443:443'
+      - '8080:8080'
+      - '8443:8443'
+      env_vars:
+      - 'cloud_service_account=((.properties.cloud_service_account))'
+      - 'pks_plan_name_1=((.pks_plan_name_1))'
+      - 'pks_plan_name_2=((.properties.pks_plan_name_2))'
+      - 'pks_plan_name_3=((.properties.pks_plan_name_1))'
+      - 'etcd_urls_1=((.properties.etcd_urls_1))'
+      - 'etcd_urls_2=((.properties.etcd_urls_2))'
+      - 'etcd_urls_3=((.properties.etcd_urls_3))'
+      - 'cluster_name_prefix_1=((.properties.cluster_name_prefix_1))'
+      - 'cluster_name_prefix_2=((.properties.cluster_name_prefix_2))'
+      - 'cluster_name_prefix_3=((.properties.cluster_name_prefix_3))'
+      - 'diskname_1=((.properties.diskname_1))'
+      - 'diskname_2=((.properties.diskname_2))'
+      - 'diskname_3=((.properties.diskname_3))'
 forms:
 - name: CloudCredentials
-  label: Cloud credentials configuraition
+  label: Cloud credentials configuration
   description: Configure cloud credentials for dynamic disk provisioning
   properties:
   - name: cloud_service_account
     type: text
-    default:
+    default: <NO CREDENTIALS>
     label: Cloud service account (JSON)
     description: Paste your cloud service account credentials here (JSON).
 - name: Plan_1
@@ -55,69 +74,89 @@ forms:
   properties:
   - name: pks_plan_name_1
     type: string
-    default: portworx-small
+    default: small
     label: PKS Plan Name
     description: This must match the plan name set in your PKS tile which you want to add Portworx to.
+  - name: use_external_etcd_1
+    type: selector
+    label: "Use external ETCD cluster?"
+    description: "Choose whether or not to use an external ETCD Cluster."
+    configurable: true
+    default: feature_disabled
+    optional: false
+    option_templates:
+    - name: feature_enabled
+      select_value: feature_enabled
+      label: External ETCD
+      description: Choose an external ETCD server and enter the urls for it.
+      property_blueprints:
+      - name: etcd_urls_1
+        type: string
+        label: ETCD URLs
+        configurable: true
+        default: etcd:http://<etcd-1>:<etcd-port>,etcd:http://<etcd-2>:<etcd-port>,etcd:http://<etcd-3>:<etcd-port>
+    - name: feature_disabled
+      select_value: feature_disabled
+      label: Embedded ETCD
+      description: Portworx will run an ETCD cluster inside the px containers running on the PKS worker nodes.
   - name: cluster_name_prefix_1
     type: string
     default: portworx-small
     label: Cluster Name Prefix
     description: This prefix will be used when generating a unique cluster name for each cluster
-  - name: internal_kvdb_1
-    type: boolean
-    default: true
-    label: Internal KVDB
-    description: Internal KVDB
   - name: diskname_1
     type: string
     default:
     label: Disk name or template
     description: Specify comma-separated list of drives. (example:/dev/sdb,/dev/sdc or "type=gp2,size=100")
-- name: Plan_2
-  label: Plan 2
-  description: Configure how Portworx will be installed on PKS clusters based on Plan 2
-  properties:
-  - name: pks_plan_name_2
-    type: string
-    default: portworx-small
-    label: PKS Plan Name
-    description: This must match the plan name set in your PKS tile which you want to add Portworx to.
-  - name: cluster_name_prefix_2
-    type: string
-    default: portworx-medium
-    label: Cluster Name Prefix
-    description: This prefix will be used when generating a unique cluster name for each cluster
-  - name: internal_kvdb_2
-    type: boolean
-    default: true
-    label: Internal KVDB
-    description: Internal KVDB
-  - name: diskname_2
-    type: string
-    default:
-    label: Disk name or template
-    description: Specify comma-separated list of drives. (example:/dev/sdb,/dev/sdc or template for cloud drives "type=gp2,size=100")
-- name: Plan-3
-  label: Plan 3
-  description: Configure how Portworx will be installed on PKS clusters based on Plan 3
-  properties:
-  - name: pks_plan_name_3
-    type: string
-    default: portworx-small
-    label: PKS Plan Name
-    description: This must match the plan name set in your PKS tile which you want to add Portworx to.
-  - name: cluster_name_prefix_3
-    type: string
-    default: portworx-large
-    label: Cluster Name Prefix
-    description: This prefix will be used when generating a unique cluster name for each cluster
-  - name: internal_kvdb_3
-    type: boolean
-    default: true
-    label: Internal KVDB
-    description: Internal KVDB
-  - name: diskname_3
-    type: string
-    default:
-    label: Disk name or template
-    description: Specify comma-separated list of drives. (example:/dev/sdb,/dev/sdc or template for cloud drives "type=gp2,size=100")
+# - name: Plan_2
+#   label: Plan 2
+#   description: Configure how Portworx will be installed on PKS clusters based on Plan 2
+#   properties:
+#   - name: pks_plan_name_2
+#     type: string
+#     default: portworx-small
+#     label: PKS Plan Name
+#     description: This must match the plan name set in your PKS tile which you want to add Portworx to.
+#   - name: cluster_name_prefix_2
+#     type: string
+#     default: portworx-medium
+#     label: Cluster Name Prefix
+#     description: This prefix will be used when generating a unique cluster name for each cluster
+#   - name: internal_kvdb_2
+#     type: boolean
+#     default: true
+#     label: Internal KVDB
+#     description: Internal KVDB
+#   - name: diskname_2
+#     type: string
+#     default:
+#     label: Disk name or template
+#     description: Specify comma-separated list of drives. (example:/dev/sdb,/dev/sdc or template for cloud drives "type=gp2,size=100")
+# - name: Plan-3
+#   label: Plan 3
+#   description: Configure how Portworx will be installed on PKS clusters based on Plan 3
+#   properties:
+#   - name: pks_plan_name_3
+#     type: string
+#     default: portworx-small
+#     label: PKS Plan Name
+#     description: This must match the plan name set in your PKS tile which you want to add Portworx to.
+#   - name: cluster_name_prefix_3
+#     type: string
+#     default: portworx-large
+#     label: Cluster Name Prefix
+#     description: This prefix will be used when generating a unique cluster name for each cluster
+#   - name: internal_kvdb_3
+#     type: boolean
+#     default: true
+#     label: Internal KVDB
+#     description: Internal KVDB
+#   - name: diskname_3
+#     type: string
+#     default:
+#     label: Disk name or template
+#     description: Specify comma-separated list of drives. (example:/dev/sdb,/dev/sdc or template for cloud drives "type=gp2,size=100")
+stemcell_criteria:
+  os: 'ubuntu-trusty'
+  version: '3541'
