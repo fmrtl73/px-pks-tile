@@ -45,6 +45,7 @@ packages:
       - '8080:8080'
       - '8443:8443'
       environment:
+      - pks_api_uri:((.properties.pks_api_uri.value))
       - cloud_service_account:((.properties.cloud_service_account.value))
       - pks_plan_name_1:((.properties.pks_plan_name_1.value))
       - pks_plan_name_2:((.properties.pks_plan_name_2.value))
@@ -64,6 +65,10 @@ forms:
   label: Credentials
   description: Configure cloud credentials for PKS and dynamic disk provisioning
   properties:
+  - name: pks_api_uri
+    type: string
+    label: The PKS API server URI
+    description: The PKS API server URI
   - name: pks_creds
     type: simple_credentials
     label: PKS Credentials
