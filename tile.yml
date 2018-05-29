@@ -120,7 +120,7 @@ forms:
     label: Disk name or template
     description: Specify comma-separated list of drives. (example:/dev/sdb,/dev/sdc or "type=gp2,size=100")
 - name: Plan_2
-  label: Plan 1
+  label: Plan 2
   description: Configure how Portworx will be installed on PKS clusters based on Plan 1
   properties:
   - name: pks_plan_name_2
@@ -161,7 +161,7 @@ forms:
     label: Disk name or template
     description: Specify comma-separated list of drives. (example:/dev/sdb,/dev/sdc or "type=gp2,size=100")
 - name: Plan_3
-  label: Plan 1
+  label: Plan 3
   description: Configure how Portworx will be installed on PKS clusters based on Plan 1
   properties:
   - name: pks_plan_name_3
