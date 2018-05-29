@@ -125,7 +125,7 @@ forms:
   properties:
   - name: pks_plan_name_2
     type: string
-    default: small
+    default: medium
     label: PKS Plan Name
     description: This must match the plan name set in your PKS tile which you want to add Portworx to.
   - name: use_external_etcd_2
@@ -166,7 +166,7 @@ forms:
   properties:
   - name: pks_plan_name_3
     type: string
-    default: small
+    default: large
     label: PKS Plan Name
     description: This must match the plan name set in your PKS tile which you want to add Portworx to.
   - name: use_external_etcd_3
